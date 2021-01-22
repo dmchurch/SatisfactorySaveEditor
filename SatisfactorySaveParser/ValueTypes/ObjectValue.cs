@@ -9,5 +9,6 @@ namespace SatisfactorySaveParser.ValueTypes
         override public ObjectValue Parse(BinaryReader reader) =>
             new(reader.ReadLengthPrefixedString(), reader.ReadLengthPrefixedString());
         public SaveObject ReferencedObject { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ObjectValue() : this(null, null) { }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using SatisfactorySaveParser.ValueTypes;
 
 namespace SatisfactorySaveParser.PropertyTypes
 {
@@ -8,39 +7,12 @@ namespace SatisfactorySaveParser.PropertyTypes
         public const string TypeName = nameof(Int64Property);
         public override string PropertyType => TypeName;
 
-        public override int SerializedLength => 8;
-
-        public long Value { get; set; }
+        [PropertyValue]
+        public Int64Value Value { get; set; }
 
         public Int64Property(string propertyName, int index = 0) : base(propertyName, index)
         {
         }
 
-        public override string ToString()
-        {
-            return $"int64: {Value}";
-        }
-
-        public override void Serialize(BinaryWriter writer, bool writeHeader = true)
-        {
-            base.Serialize(writer, writeHeader);
-
-            writer.Write(SerializedLength);
-            writer.Write(Index);
-
-            writer.Write((byte)0);
-            writer.Write(Value);
-        }
-
-        public static Int64Property Parse(string propertyName, int index, BinaryReader reader)
-        {
-            var unk3 = reader.ReadByte();
-            Trace.Assert(unk3 == 0);
-
-            return new Int64Property(propertyName, index)
-            {
-                Value = reader.ReadInt64()
-            };
-        }
     }
 }

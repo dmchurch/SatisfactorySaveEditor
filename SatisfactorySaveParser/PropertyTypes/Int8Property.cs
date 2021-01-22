@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using SatisfactorySaveParser.ValueTypes;
 
 namespace SatisfactorySaveParser.PropertyTypes
 {
@@ -8,39 +7,11 @@ namespace SatisfactorySaveParser.PropertyTypes
         public const string TypeName = nameof(Int8Property);
         public override string PropertyType => TypeName;
 
-        public override int SerializedLength => 1;
-
-        public byte Value { get; set; }
+        [PropertyValue]
+        public ByteValue Value { get; set; }
 
         public Int8Property(string propertyName, int index = 0) : base(propertyName, index)
         {
-        }
-
-        public override string ToString()
-        {
-            return $"int8: {Value}";
-        }
-
-        public override void Serialize(BinaryWriter writer, bool writeHeader = true)
-        {
-            base.Serialize(writer, writeHeader);
-
-            writer.Write(SerializedLength);
-            writer.Write(Index);
-
-            writer.Write((byte)0);
-            writer.Write(Value);
-        }
-
-        public static Int8Property Parse(string propertyName, int index, BinaryReader reader)
-        {
-            var unk3 = reader.ReadByte();
-            Trace.Assert(unk3 == 0);
-
-            return new Int8Property(propertyName, index)
-            {
-                Value = reader.ReadByte()
-            };
         }
     }
 }

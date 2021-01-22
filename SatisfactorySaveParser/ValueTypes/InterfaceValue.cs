@@ -19,6 +19,7 @@ namespace SatisfactorySaveParser.ValueTypes
     }
 
     public record InterfaceValue(string LevelName, string PathName): InterfaceValueBase(LevelName, PathName), ISerializableValue<InterfaceValue> {
+        public InterfaceValue() : this(null, null) { }
         override public InterfaceValue Parse(BinaryReader reader) =>
             new(reader.ReadLengthPrefixedString(), reader.ReadLengthPrefixedString());
     }

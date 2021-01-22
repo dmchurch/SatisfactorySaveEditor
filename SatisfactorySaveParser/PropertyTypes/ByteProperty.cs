@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using SatisfactorySaveParser.ValueTypes;
 
 namespace SatisfactorySaveParser.PropertyTypes
 {
@@ -7,64 +6,45 @@ namespace SatisfactorySaveParser.PropertyTypes
     {
         public const string TypeName = nameof(ByteProperty);
         public override string PropertyType => TypeName;
-        public override int SerializedLength => Type == "None" ? 1 : Value.GetSerializedLength();
 
-        public string Type { get; set; }
-        public string Value { get; set; }
+        [PropertyHeader]
+        public StrValue Type { get; set; }
 
+        public ByteValue PropertyByteValue { get; set; } = new();
+        public StrValue PropertyStrValue { get; set; } = new();
+
+        [PropertyValue]
+        public ISerializableValue EitherValue {
+            get => Type == "None" ? PropertyByteValue : PropertyStrValue;
+            set
+            {
+                if (Type == "None")
+                {
+                    PropertyByteValue = (ByteValue)value;
+                }
+                else
+                {
+                    PropertyStrValue = (StrValue)value;
+                }
+            }
+        }
+
+        public string Value {
+            get => EitherValue.ToString();
+            set {
+                if (Type == "None")
+                {
+                    PropertyByteValue = byte.Parse(Value);
+                }
+                else
+                {
+                    PropertyStrValue = value;
+                }
+            }
+        }
         public ByteProperty(string propertyName, int index = 0) : base(propertyName, index)
         {
         }
 
-        public override string ToString()
-        {
-            return $"byte";
-        }
-
-        public override void Serialize(BinaryWriter writer, bool writeHeader = true)
-        {
-            if (writeHeader)
-                base.Serialize(writer, writeHeader);
-
-            writer.Write(SerializedLength);
-            writer.Write(Index);
-
-            writer.WriteLengthPrefixedString(Type);
-            writer.Write((byte)0);
-
-            if (Type == "None")
-            {
-                var b = byte.Parse(Value);
-                writer.Write(b);
-            }
-            else
-            {
-                writer.WriteLengthPrefixedString(Value);
-            }
-        }
-
-        public static ByteProperty Parse(string propertyName, int index, BinaryReader reader, out int overhead)
-        {
-            var result = new ByteProperty(propertyName, index)
-            {
-                Type = reader.ReadLengthPrefixedString()
-            };
-
-            var unk = reader.ReadByte();
-            Trace.Assert(unk == 0);
-
-            if (result.Type == "None")
-            {
-                result.Value = reader.ReadByte().ToString();
-            }
-            else
-            {
-                result.Value = reader.ReadLengthPrefixedString();
-            }
-
-            overhead = result.Type.Length + 6;
-
-            return result;
-        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using SatisfactorySaveParser.ValueTypes;
 
 namespace SatisfactorySaveParser.PropertyTypes
 {
@@ -7,39 +6,12 @@ namespace SatisfactorySaveParser.PropertyTypes
     {
         public const string TypeName = nameof(FloatProperty);
         public override string PropertyType => TypeName;
-        public override int SerializedLength => 4;
-        public float Value { get; set; }
+
+        [PropertyValue]
+        public FloatValue Value { get; set; }
 
         public FloatProperty(string propertyName, int index = 0) : base(propertyName, index)
         {
-        }
-
-        public override string ToString()
-        {
-            return $"float: {Value}";
-        }
-
-        public override void Serialize(BinaryWriter writer, bool writeHeader = true)
-        {
-            base.Serialize(writer, writeHeader);
-
-            writer.Write(SerializedLength);
-            writer.Write(Index);
-
-            writer.Write((byte)0);
-            writer.Write(Value);
-        }
-
-        public static FloatProperty Parse(string propertyName, int index, BinaryReader reader)
-        {
-            var result = new FloatProperty(propertyName, index);
-
-            var unk3 = reader.ReadByte();
-            Trace.Assert(unk3 == 0);
-
-            result.Value = reader.ReadSingle();
-
-            return result;
         }
     }
 }
