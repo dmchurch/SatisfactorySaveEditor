@@ -1,9 +1,9 @@
 ﻿namespace SatisfactorySaveParser.Structures
 {
-    public class Vector2
+    public record Vector2(float X = 0, float Y = 0)
     {
-        public float X { get; set; }
-        public float Y { get; set; }
+        public float X { get; set; } = X;
+        public float Y { get; set; } = Y;
 
         public override string ToString()
         {
